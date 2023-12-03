@@ -8,17 +8,40 @@ import Recipes from '../components/recipes';
 import { useNavigation } from '@react-navigation/native';
 import { useFavorites } from './FavoritesContext';
 import WeatherContainer from '../components/WeatherContainer';
+import * as Location from 'expo-location';
 
 
 export default function HomeScreen() {
 
   const [meals, setMeals] = useState([]);
+  const [location, setLocation] = useState(null);
   const navigation = useNavigation();
   const { favorites = [], addToFavorites, removeFromFavorites } = useFavorites();
 
   useEffect(() => {
-    getRecipes();
+    getUserLocation();
   }, []);
+
+  useEffect(() => {
+    if (location) {
+      getRecipes();
+    }
+  }, [location]); 
+
+  const getUserLocation = async () => {
+    try {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+    } catch (error) {
+      console.error('Error getting location:', error.message);
+    }
+  };
 
   const navigateToFavorites = () => {
     navigation.navigate('FavoritesScreen', { favorites });
@@ -26,10 +49,24 @@ export default function HomeScreen() {
 
   const getRecipes = async () => {
     try {
-      const response = await axios.get('http://192.168.1.100:5000/api/recipe');
-      const data = response.data;
-      setMeals(data.recipes);
+      // Use the user's coordinates to fetch weather and recipes
+      console.log('Location:', location);
+      if (location) {
+        const { latitude, longitude } = location.coords;
+        console.log("Latitude: ", latitude);
+        console.log("Longitude:", longitude);
+        // Fetch recipes using user's coordinates
+        const recipesResponse = await axios.get(
+          `http://192.168.100.129:5000/api/recipe?latitude=${latitude}&longitude=${longitude}`
+        );
+        
+        const recipesData = recipesResponse.data.recipes;
 
+        // Set weather data and recipes
+        setMeals(recipesData);
+      } else {
+        console.warn('Location not available');
+      }
     } catch (error) {
       console.error('Error:', error.message);
     }

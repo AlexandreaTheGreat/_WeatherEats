@@ -44,7 +44,7 @@ export default function RecipeDetailScreen(props) {
   };
 
   useEffect(() => {
-    const apiEndpoint = `http://192.168.1.100:5000/api/recipe/${item.id}`;
+    const apiEndpoint = `http://192.168.100.129:5000/api/recipe/${item.id}`;
     console.log(apiEndpoint);
     getMealData(apiEndpoint);
   }, []);

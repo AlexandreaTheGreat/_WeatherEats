@@ -15,6 +15,8 @@ const WeatherContainer = () => {
   const isWetSeason = currentDate.getMonth() >= 5 && currentDate.getMonth() <= 10; // Determine wet or dry season
 
   useEffect(() => {
+    let locationWatcher;
+
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
@@ -22,9 +24,24 @@ const WeatherContainer = () => {
         return;
       }
 
-      let location = await Location.getCurrentPositionAsync({});
-      getWeatherData(location.coords);
+      locationWatcher = await Location.watchPositionAsync(
+        { enableHighAccuracy: true, distanceInterval: 500 }, // You can adjust distanceInterval as needed
+        (newLocation) => {
+          getWeatherData(newLocation.coords);
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+          Alert.alert('Error', 'Failed to get location.');
+        }
+      );
     })();
+
+    // Optionally, you can stop watching the location when the component unmounts
+    return () => {
+      if (locationWatcher) {
+        locationWatcher.remove();
+      }
+    };
   }, []);
 
   const getWeatherData = (coords) => {
@@ -38,6 +55,7 @@ const WeatherContainer = () => {
         console.error('Error fetching weather data:', error.response || error.message || error);
         setWeatherData(null); // Set weatherData to null in case of an error
       });
+    axios.post(`http://192.168.100.129:5000/api/weather`, { coords });
   };
 
   return (
@@ -61,6 +79,9 @@ const WeatherContainer = () => {
                 uri: `http://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png`,
               }}
             />
+            <Text style={styles.seasonText}>
+            Season: {isWetSeason ? 'Wet' : 'Dry'}
+            </Text>
           </View>
         </View>
       ) : (
@@ -71,11 +92,9 @@ const WeatherContainer = () => {
           <Text style={styles.humidity}>
             Humidity: {weatherData.main.humidity}%
           </Text>
+          <Text>  </Text>
           <Text style={styles.weatherDescription}>
             Description: {weatherData.weather[0].description}
-          </Text>
-          <Text style={styles.seasonText}>
-            Season: {isWetSeason ? 'Wet Season' : 'Dry Season'}
           </Text>
         </View>
       ) : (
@@ -84,6 +103,8 @@ const WeatherContainer = () => {
     </View>
   );
 };
+
+export default WeatherContainer;
 
 const styles = StyleSheet.create({
   container: {
@@ -104,11 +125,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#0077B6'
   },
   bottomContainer: {
-    flexDirection: 'column',
-    width: '99.5%',
-    borderLeftWidth: 63,
-    borderRightWidth: 63,
+    flexDirection: 'row',
+    maxWidth: '100%',
     justifyContent: 'space-between',
+    border: 1,
     borderColor: '#78aed3',
     padding: 20,
     borderBottomRightRadius: 10,
@@ -155,5 +175,3 @@ const styles = StyleSheet.create({
     color: 'white'
   }
 });
-
-export default WeatherContainer;
