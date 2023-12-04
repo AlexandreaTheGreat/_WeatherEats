@@ -57,7 +57,7 @@ export default function HomeScreen() {
         console.log("Longitude:", longitude);
         // Fetch recipes using user's coordinates
         const recipesResponse = await axios.get(
-          `http://192.168.100.129:5000/api/recipe?latitude=${latitude}&longitude=${longitude}`
+          `http://192.168.221.134:5000/api/recipe?latitude=${latitude}&longitude=${longitude}`
         );
         
         const recipesData = recipesResponse.data.recipes;
@@ -100,7 +100,7 @@ export default function HomeScreen() {
         </View>
 
         {/* recipes */}
-        <View>
+        <View style={styles.recipeContainer}>
           {meals && meals.length > 0 ? (
             <Recipes meals={meals} />
           ) : (
@@ -160,4 +160,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 12,
   },
+  recipeContainer: {
+    marginRight: 5
+  }
 });

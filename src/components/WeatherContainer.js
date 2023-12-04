@@ -122,7 +122,8 @@ const styles = StyleSheet.create({
     padding: 20,
     borderTopRightRadius: 10,
     borderTopLeftRadius: 10,
-    backgroundColor: '#0077B6'
+    backgroundColor: '#0077B6',
+    marginHorizontal: 3
   },
   bottomContainer: {
     flexDirection: 'row',
@@ -134,6 +135,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 10,
     borderBottomLeftRadius: 10,
     backgroundColor: '#78aed3', 
+    marginHorizontal: 10
 
   },
   weatherInfo: {

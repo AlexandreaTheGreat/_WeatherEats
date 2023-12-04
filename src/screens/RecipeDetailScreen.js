@@ -44,7 +44,7 @@ export default function RecipeDetailScreen(props) {
   };
 
   useEffect(() => {
-    const apiEndpoint = `http://192.168.100.129:5000/api/recipe/${item.id}`;
+    const apiEndpoint = `http://192.168.221.134:5000/api/recipe/${item.id}`;
     console.log(apiEndpoint);
     getMealData(apiEndpoint);
   }, []);
@@ -182,11 +182,9 @@ export default function RecipeDetailScreen(props) {
             <Animated.View style={styles.instructionsContainer}>
               <Text style={styles.instructionsTitle}>Instructions</Text>
               <View style={styles.instructionsList}>
-                {meal?.Instruction.split('.').map((instruction, index) => (
-                  <Text key={index} style={styles.instructionItem}>
-                    {`\u2022 ${instruction}`}
-                  </Text>
-                ))}
+              <Text style={styles.instructionItem}>
+                {meal?.Instruction}
+              </Text>
               </View>
             </Animated.View>
 
@@ -255,7 +253,7 @@ const styles = StyleSheet.create({
   },
   recipeDescription: {
     fontSize: hp(2),
-    fontWeight: 'bold',
+    fontWeight: 'light',
     color: 'black',
   },
   miscContainer: {
@@ -305,10 +303,11 @@ const styles = StyleSheet.create({
   },
   ingredientsList: {
     marginLeft: 10,
+    marginRight: 10
   },
   ingredientItem: {
     fontSize: hp(1.7),
-    fontWeight: 'bold',
+    fontWeight: 'light',
     color: 'black',
   },
   instructionsContainer: {
@@ -319,13 +318,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'black',
   },
+  
   instructionsList: {
     marginLeft: 10,
+    marginRight: 10
   },
+
   instructionItem: {
     fontSize: hp(1.7),
-    fontWeight: 'bold',
+    fontWeight: 'light',
     color: 'black',
+    textAlign: 'justify'
+    
   },
   loading: {
     marginTop: 16,
